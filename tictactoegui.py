@@ -14,6 +14,9 @@ class TicTacToeGUI:
 
         self.player_score = 0
         self.cpu_score = 0
+        self.streak = self.load_streak()
+        self.current_streak = 0
+        self.previous_result = "win"
 
         self.load_images()
         self.make_buttons()
@@ -59,28 +62,48 @@ class TicTacToeGUI:
 
     def end_game(self, winner):
         '''ends game when someone wins, adds to score, brings up restart button and changes top display colour'''
+        # buttons were still clickable by player
         self.disable_buttons()
         if winner == "player":
             self.player_score += 1
+            # grid the win button so it can be seen and clicked
             self.win_button.grid(column=1, row=2)
+            # change colour of top display to be same colour as win button
             self.display.itemconfig(self.display_img, image=self.top_display_win_img)
+            self.streak_check("win")
         elif winner == "cpu":
             self.cpu_score += 1
             self.lose_button.grid(column=1, row=2)
             self.display.itemconfig(self.display_img, image=self.top_display_lose_img)
+            self.streak_check("lose")
         else:
             print("error")
 
     def end_game_tie(self):
         '''if the game ends in a tie, bring up restart button and change top display colour'''
+        self.disable_buttons()
         self.tie_button.grid(column=1, row=2)
         self.display.itemconfig(self.display_img, image=self.top_display_tie_img)
+        self.streak_check("tie")
 
     def restart_game(self):
         '''how to restart the game'''
         self.clear_end_buttons()
         self.refresh_buttons()
         self.ttt_engine.clear_positions()
+        self.save_streak()
+
+    def streak_check(self, result):
+        if result == "win":
+            if self.previous_result == "win":
+                self.current_streak += 1
+
+        elif result == "lose" or result == "tie":
+            self.current_streak = 0
+            print("new loss break streak")
+        # result is now previous result
+        self.previous_result = result
+
 
     def make_end_buttons(self):
         '''makes the buttons for when the game ends, that restart the game when pressed'''
@@ -96,6 +119,7 @@ class TicTacToeGUI:
 
     def disable_buttons(self):
         '''buttons are still clickable when game is over'''
+        # the buttons are still clickable but don't do anything
         for button in self.buttonlist:
             button.config(command=0)
     def make_buttons(self):
@@ -131,6 +155,8 @@ class TicTacToeGUI:
         self.display_img = self.display.create_image((300,100), image=self.top_display_img)
         self.display_player_score = self.display.create_text(110, 50, text=f"Player: {self.player_score}", fill="white", font=FONT)
         self.display_cpu_score = self.display.create_text(510, 50, text=f"CPU: {self.cpu_score}", fill="white", font=FONT)
+        self.display_current_streak = self.display.create_text(110, 140, text=f"Current\nstreak: {self.current_streak}", font=FONT, fill="white")
+        self.display_longest_streak = self.display.create_text(500, 140, text=f"Best\nstreak: {self.streak}", fill="white", font=FONT)
         self.display.grid(column=0, columnspan=3, row=0)
 
     def refresh_buttons(self):
@@ -156,6 +182,8 @@ class TicTacToeGUI:
         self.display.itemconfig(self.display_img, image=self.top_display_img)
         self.display.itemconfig(self.display_player_score, text=f"Player: {self.player_score}")
         self.display.itemconfig(self.display_cpu_score, text=f"CPU: {self.cpu_score}")
+        self.display.itemconfig(self.display_current_streak, text=f"Current\nstreak: {self.current_streak}")
+        self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.streak}")
         self.display.grid(column=0, columnspan=3, row=0)
 
     def load_images(self):
@@ -185,3 +213,15 @@ class TicTacToeGUI:
         self.buttonlist.append(self.button_seven)
         self.buttonlist.append(self.button_eight)
         self.buttonlist.append(self.button_nine)
+
+    def load_streak(self):
+        '''load in previous longest streak from file'''
+        with open(mode="r", file="./data/streakdata.txt") as file:
+            streak = int(file.readline())
+        return streak
+
+    def save_streak(self):
+        if self.current_streak > self.streak:
+
+            with open(mode="w", file="./data/streakdata.txt") as file:
+                file.write(str(self.current_streak))
