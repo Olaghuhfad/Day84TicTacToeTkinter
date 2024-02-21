@@ -97,10 +97,8 @@ class TicTacToeGUI:
         if result == "win":
             if self.previous_result == "win":
                 self.current_streak += 1
-
         elif result == "lose" or result == "tie":
             self.current_streak = 0
-            print("new loss break streak")
         # result is now previous result
         self.previous_result = result
 
