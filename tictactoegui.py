@@ -3,12 +3,17 @@ from tkinter import *
 import random
 from tictactoe import TicTacToe
 
+FONT = ("Courier", 24, "normal")
+
 class TicTacToeGUI:
 
     def __init__(self, window):
         self.window = window
 
         self.ttt_engine = TicTacToe()
+
+        self.player_score = 0
+        self.cpu_score = 0
 
         self.load_images()
         self.make_buttons()
@@ -46,14 +51,19 @@ class TicTacToeGUI:
 
     def end_game(self, winner):
         if winner == "player":
-            self.win_button.grid(column=1, row=1)
+            self.player_score += 1
+            self.win_button.grid(column=1, row=2)
+            self.display.itemconfig(self.display_img, image=self.top_display_win_img)
         elif winner == "cpu":
-            self.lose_button.grid(column=1, row=1)
+            self.cpu_score += 1
+            self.lose_button.grid(column=1, row=2)
+            self.display.itemconfig(self.display_img, image=self.top_display_lose_img)
         else:
             print("error")
 
     def end_game_tie(self):
-        self.tie_button.grid(column=1, row=1)
+        self.tie_button.grid(column=1, row=2)
+        self.display.itemconfig(self.display_img, image=self.top_display_tie_img)
 
     def restart_game(self):
         self.clear_end_buttons()
@@ -70,33 +80,44 @@ class TicTacToeGUI:
         self.lose_img = PhotoImage(file="./images/RedLosePNG.png")
         self.tie_img = PhotoImage(file="./images/OrangeTiePNG.png")
 
+        self.top_display_img = PhotoImage(file="./images/TopDisplayPNG.png")
+        self.top_display_win_img = PhotoImage(file="./images/TopDisplayWinPNG.png")
+        self.top_display_lose_img = PhotoImage(file="./images/TopDisplayLosePNG.png")
+        self.top_display_tie_img = PhotoImage(file="./images/TopDisplayTiePNG.png")
+
     def make_buttons(self):
         self.button_one = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(1))
-        self.button_one.grid(column=0, row=2)
+        self.button_one.grid(column=0, row=3)
 
         self.button_two = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(2))
-        self.button_two.grid(column=1, row=2)
+        self.button_two.grid(column=1, row=3)
 
         self.button_three = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(3))
-        self.button_three.grid(column=2, row=2)
+        self.button_three.grid(column=2, row=3)
 
         self.button_four = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(4))
-        self.button_four.grid(column=0, row=1)
+        self.button_four.grid(column=0, row=2)
 
         self.button_five = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(5))
-        self.button_five.grid(column=1, row=1)
+        self.button_five.grid(column=1, row=2)
 
         self.button_six = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(6))
-        self.button_six.grid(column=2, row=1)
+        self.button_six.grid(column=2, row=2)
 
         self.button_seven = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(7))
-        self.button_seven.grid(column=0, row=0)
+        self.button_seven.grid(column=0, row=1)
 
         self.button_eight = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(8))
-        self.button_eight.grid(column=1, row=0)
+        self.button_eight.grid(column=1, row=1)
 
         self.button_nine = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(9))
-        self.button_nine.grid(column=2, row=0)
+        self.button_nine.grid(column=2, row=1)
+
+        self.display = Canvas(width=600, height=200, highlightthickness=0)
+        self.display_img = self.display.create_image((300,100), image=self.top_display_img)
+        self.display_player_score = self.display.create_text(110, 50, text=f"Player: {self.player_score}", fill="white", font=FONT)
+        self.display_cpu_score = self.display.create_text(510, 50, text=f"CPU: {self.cpu_score}", fill="white", font=FONT)
+        self.display.grid(column=0, columnspan=3, row=0)
 
     def make_button_list(self):
         self.buttonlist = []
@@ -122,20 +143,24 @@ class TicTacToeGUI:
 
     def refresh_buttons(self):
         self.button_one.config(image=self.black_button, command=lambda: self.on_click(1))
-        self.button_one.grid(column=0, row=2)
+        self.button_one.grid(column=0, row=3)
         self.button_two.config(image=self.black_button, command=lambda: self.on_click(2))
-        self.button_two.grid(column=1, row=2)
+        self.button_two.grid(column=1, row=3)
         self.button_three.config(image=self.black_button, command=lambda: self.on_click(3))
-        self.button_three.grid(column=2, row=2)
+        self.button_three.grid(column=2, row=3)
         self.button_four.config(image=self.black_button, command=lambda: self.on_click(4))
-        self.button_four.grid(column=0, row=1)
+        self.button_four.grid(column=0, row=2)
         self.button_five.config(image=self.black_button, command=lambda: self.on_click(5))
-        self.button_five.grid(column=1, row=1)
+        self.button_five.grid(column=1, row=2)
         self.button_six.config(image=self.black_button, command=lambda: self.on_click(6))
-        self.button_six.grid(column=2, row=1)
+        self.button_six.grid(column=2, row=2)
         self.button_seven.config(image=self.black_button, command=lambda: self.on_click(7))
-        self.button_seven.grid(column=0, row=0)
+        self.button_seven.grid(column=0, row=1)
         self.button_eight.config(image=self.black_button, command=lambda: self.on_click(8))
-        self.button_eight.grid(column=1, row=0)
+        self.button_eight.grid(column=1, row=1)
         self.button_nine.config(image=self.black_button, command=lambda: self.on_click(9))
-        self.button_nine.grid(column=2, row=0)
+        self.button_nine.grid(column=2, row=1)
+        self.display.itemconfig(self.display_img, image=self.top_display_img)
+        self.display.itemconfig(self.display_player_score, text=f"Player: {self.player_score}")
+        self.display.itemconfig(self.display_cpu_score, text=f"CPU: {self.cpu_score}")
+        self.display.grid(column=0, columnspan=3, row=0)

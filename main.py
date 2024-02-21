@@ -8,7 +8,7 @@ FONT = ("Arial", 24, "normal")
 
 root = Tk()
 root.title("TicTacToe")
-root.minsize(width=600, height=600)
+root.minsize(width=600, height=800)
 
 GUI = TicTacToeGUI(root)
 
