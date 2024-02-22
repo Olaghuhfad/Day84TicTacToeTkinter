@@ -91,7 +91,7 @@ class TicTacToeGUI:
         self.clear_end_buttons()
         self.refresh_buttons()
         self.ttt_engine.clear_positions()
-        self.save_streak()
+
 
     def streak_check(self, result):
         if result == "win":
@@ -181,7 +181,10 @@ class TicTacToeGUI:
         self.display.itemconfig(self.display_player_score, text=f"Player: {self.player_score}")
         self.display.itemconfig(self.display_cpu_score, text=f"CPU: {self.cpu_score}")
         self.display.itemconfig(self.display_current_streak, text=f"Current\nstreak: {self.current_streak}")
-        self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.streak}")
+        if self.current_streak > self.streak:
+            self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.current_streak}")
+        else:
+            self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.streak}")
         self.display.grid(column=0, columnspan=3, row=0)
 
     def load_images(self):
