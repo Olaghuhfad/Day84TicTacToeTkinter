@@ -40,13 +40,15 @@ class TicTacToeGUI:
 
         # need to check if the move made the player win, so then cpu does not make a move
         if self.ttt_engine.check_win() == "player":
-            self.end_game("player")
+            # self.end_game("player")
+            self.window.after(800, self.end_game, "player")
             return
 
         # checks if the player move created a tie, so the cpu does not make a move
         curmoves = self.ttt_engine.get_number_of_moves()
         if curmoves == 9:
-            self.end_game_tie()
+            # self.end_game_tie()
+            self.window.after(800, self.end_game_tie)
             return
 
 
@@ -63,7 +65,8 @@ class TicTacToeGUI:
 
         # check if cpu has won from the new move, so game can end
         if self.ttt_engine.check_win() == "cpu":
-            self.end_game("cpu")
+            # self.end_game("cpu")
+            self.window.after(800, self.end_game, "cpu")
             return
 
 
