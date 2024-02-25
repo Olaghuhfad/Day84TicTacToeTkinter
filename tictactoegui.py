@@ -14,7 +14,7 @@ class TicTacToeGUI:
 
         self.player_score = 0
         self.cpu_score = 0
-        self.streak = self.load_streak()
+        self.old_streak = self.load_streak()
         self.current_streak = 0
         self.previous_result = "win"
 
@@ -95,12 +95,13 @@ class TicTacToeGUI:
 
     def streak_check(self, result):
         if result == "win":
-            if self.previous_result == "win":
-                self.current_streak += 1
+            self.current_streak += 1
         elif result == "lose" or result == "tie":
             self.current_streak = 0
         # result is now previous result
         self.previous_result = result
+        if self.current_streak > self.old_streak:
+            self.old_streak = self.current_streak
 
 
     def make_end_buttons(self):
@@ -154,7 +155,7 @@ class TicTacToeGUI:
         self.display_player_score = self.display.create_text(110, 50, text=f"Player: {self.player_score}", fill="white", font=FONT)
         self.display_cpu_score = self.display.create_text(510, 50, text=f"CPU: {self.cpu_score}", fill="white", font=FONT)
         self.display_current_streak = self.display.create_text(110, 140, text=f"Current\nstreak: {self.current_streak}", font=FONT, fill="white")
-        self.display_longest_streak = self.display.create_text(500, 140, text=f"Best\nstreak: {self.streak}", fill="white", font=FONT)
+        self.display_longest_streak = self.display.create_text(500, 140, text=f"Best\nstreak: {self.old_streak}", fill="white", font=FONT)
         self.display.grid(column=0, columnspan=3, row=0)
 
     def refresh_buttons(self):
@@ -181,10 +182,10 @@ class TicTacToeGUI:
         self.display.itemconfig(self.display_player_score, text=f"Player: {self.player_score}")
         self.display.itemconfig(self.display_cpu_score, text=f"CPU: {self.cpu_score}")
         self.display.itemconfig(self.display_current_streak, text=f"Current\nstreak: {self.current_streak}")
-        if self.current_streak > self.streak:
+        if self.current_streak > self.old_streak:
             self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.current_streak}")
         else:
-            self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.streak}")
+            self.display.itemconfig(self.display_longest_streak, text=f"Best\nstreak: {self.old_streak}")
         self.display.grid(column=0, columnspan=3, row=0)
 
     def load_images(self):
@@ -222,7 +223,8 @@ class TicTacToeGUI:
         return streak
 
     def save_streak(self):
-        if self.current_streak > self.streak:
+        saved_streak = self.load_streak()
+        if self.old_streak > saved_streak:
 
             with open(mode="w", file="./data/streakdata.txt") as file:
                 file.write(str(self.current_streak))
