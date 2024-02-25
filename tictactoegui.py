@@ -19,6 +19,7 @@ class TicTacToeGUI:
         self.previous_result = "win"
 
         self.load_images()
+        self.load_gif()
         self.make_buttons()
         self.make_button_list()
         self.make_end_buttons()
@@ -31,7 +32,9 @@ class TicTacToeGUI:
         check = self.ttt_engine.check_position_free(button_pressed)
         if check:
             self.ttt_engine.playPiece(pos=button_pressed, user="player")
-            self.buttonlist[button_pressed - 1].config(image=self.button_X)
+            self.wiggle_button(button_pressed, 0, user="player")
+            # self.window.after(500)
+            # self.buttonlist[button_pressed - 1].config(image=self.button_X)
             # disabling a button made it change colour, so remove command instead
             self.buttonlist[button_pressed - 1].config(command=0)
 
@@ -46,19 +49,24 @@ class TicTacToeGUI:
             self.end_game_tie()
             return
 
+
+
         # cpu currently only able to make random moves
         new_cpu_move = random.randint(1,9)
         # because cpu is random it may pick a move that is already taken
         while not self.ttt_engine.check_position_free(new_cpu_move):
             new_cpu_move = random.randint(1,9)
         self.ttt_engine.playPiece(pos=new_cpu_move, user="cpu")
-        self.buttonlist[new_cpu_move - 1].config(image=self.button_O)
+        self.wiggle_button(new_cpu_move, 0, user="cpu")
+
         self.buttonlist[new_cpu_move - 1].config(command=0)
 
         # check if cpu has won from the new move, so game can end
         if self.ttt_engine.check_win() == "cpu":
             self.end_game("cpu")
             return
+
+
 
     def end_game(self, winner):
         '''ends game when someone wins, adds to score, brings up restart button and changes top display colour'''
@@ -228,3 +236,34 @@ class TicTacToeGUI:
 
             with open(mode="w", file="./data/streakdata.txt") as file:
                 file.write(str(self.current_streak))
+
+    def load_gif(self):
+        self.frame_count = 13
+        self.frames = [PhotoImage(file="./images/gif/shrunkwigglegif.gif", format="gif -index %i" %(i)) for i in range(self.frame_count)]
+
+    def wiggle_button(self, button_pressed, ind, user):
+        # self.buttonlist[button_pressed - 1].config(image=self.button_X)
+        # print(f"incoming user {user}")
+        if user == "player":
+            self.wiggle_x(self.buttonlist[button_pressed - 1], 0)
+        else:
+            # self.wiggle_o(self.buttonlist[button_pressed - 1], 0)
+            self.window.after(500, self.wiggle_o, self.buttonlist[button_pressed - 1], 0)
+
+    def wiggle_x(self, widget, ind):
+        frame = self.frames[ind]
+        ind += 1
+        widget.configure(image=frame)
+        if ind == self.frame_count:
+            widget.configure(image=self.button_X)
+            return
+        self.window.after(30, self.wiggle_x, widget, ind)
+
+    def wiggle_o(self, widget, ind):
+        frame = self.frames[ind]
+        ind += 1
+        widget.configure(image=frame)
+        if ind == self.frame_count:
+            widget.configure(image=self.button_O)
+            return
+        self.window.after(30, self.wiggle_o, widget, ind)
