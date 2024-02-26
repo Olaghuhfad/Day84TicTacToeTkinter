@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 import random
 from tictactoe import TicTacToe
+from functools import partial
 
 FONT = ("Courier", 24, "normal")
 
@@ -14,6 +15,7 @@ class TicTacToeGUI:
 
         self.player_score = 0
         self.cpu_score = 0
+        self.buttonlist = []
         self.old_streak = self.load_streak()
         self.current_streak = 0
         self.previous_result = "win"
@@ -21,7 +23,7 @@ class TicTacToeGUI:
         self.load_images()
         self.load_gif()
         self.make_buttons()
-        self.make_button_list()
+        # self.make_button_list()
         self.make_end_buttons()
 
     def on_click(self, button_pressed):
@@ -134,32 +136,15 @@ class TicTacToeGUI:
             button.config(command=0)
     def make_buttons(self):
         '''creates all the buttons and the top display'''
-        self.button_one = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(1))
-        self.button_one.grid(column=0, row=3)
+        num = 0
 
-        self.button_two = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(2))
-        self.button_two.grid(column=1, row=3)
+        for row in range(1, 4):
+            for col in range(3):
+                num += 1
+                temp_button = Button(image=self.black_button, borderwidth=0, command=partial(self.on_click, num))
+                temp_button.grid(column=col, row=row)
+                self.buttonlist.append(temp_button)
 
-        self.button_three = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(3))
-        self.button_three.grid(column=2, row=3)
-
-        self.button_four = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(4))
-        self.button_four.grid(column=0, row=2)
-
-        self.button_five = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(5))
-        self.button_five.grid(column=1, row=2)
-
-        self.button_six = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(6))
-        self.button_six.grid(column=2, row=2)
-
-        self.button_seven = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(7))
-        self.button_seven.grid(column=0, row=1)
-
-        self.button_eight = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(8))
-        self.button_eight.grid(column=1, row=1)
-
-        self.button_nine = Button(image=self.black_button, borderwidth=0, command=lambda: self.on_click(9))
-        self.button_nine.grid(column=2, row=1)
 
         self.display = Canvas(width=600, height=200, highlightthickness=0)
         self.display_img = self.display.create_image((300,100), image=self.top_display_img)
@@ -171,24 +156,15 @@ class TicTacToeGUI:
 
     def refresh_buttons(self):
         ''' for game restart brings back all the buttons with commands restored and restores the top display'''
-        self.button_one.config(image=self.black_button, command=lambda: self.on_click(1))
-        self.button_one.grid(column=0, row=3)
-        self.button_two.config(image=self.black_button, command=lambda: self.on_click(2))
-        self.button_two.grid(column=1, row=3)
-        self.button_three.config(image=self.black_button, command=lambda: self.on_click(3))
-        self.button_three.grid(column=2, row=3)
-        self.button_four.config(image=self.black_button, command=lambda: self.on_click(4))
-        self.button_four.grid(column=0, row=2)
-        self.button_five.config(image=self.black_button, command=lambda: self.on_click(5))
-        self.button_five.grid(column=1, row=2)
-        self.button_six.config(image=self.black_button, command=lambda: self.on_click(6))
-        self.button_six.grid(column=2, row=2)
-        self.button_seven.config(image=self.black_button, command=lambda: self.on_click(7))
-        self.button_seven.grid(column=0, row=1)
-        self.button_eight.config(image=self.black_button, command=lambda: self.on_click(8))
-        self.button_eight.grid(column=1, row=1)
-        self.button_nine.config(image=self.black_button, command=lambda: self.on_click(9))
-        self.button_nine.grid(column=2, row=1)
+        num = 0
+        for row in range(1, 4):
+            for col in range(3):
+                num += 1
+                self.buttonlist[num-1].configure(image=self.black_button)
+                self.buttonlist[num-1].configure(command=partial(self.on_click, num))
+                self.buttonlist[num-1].grid(column=col, row=row)
+
+
         self.display.itemconfig(self.display_img, image=self.top_display_img)
         self.display.itemconfig(self.display_player_score, text=f"Player: {self.player_score}")
         self.display.itemconfig(self.display_cpu_score, text=f"CPU: {self.cpu_score}")
@@ -216,16 +192,17 @@ class TicTacToeGUI:
 
     def make_button_list(self):
         '''puts all the buttons into a list'''
-        self.buttonlist = []
-        self.buttonlist.append(self.button_one)
-        self.buttonlist.append(self.button_two)
-        self.buttonlist.append(self.button_three)
-        self.buttonlist.append(self.button_four)
-        self.buttonlist.append(self.button_five)
-        self.buttonlist.append(self.button_six)
-        self.buttonlist.append(self.button_seven)
-        self.buttonlist.append(self.button_eight)
-        self.buttonlist.append(self.button_nine)
+        pass
+        # self.buttonlist = []
+        # self.buttonlist.append(self.button_one)
+        # self.buttonlist.append(self.button_two)
+        # self.buttonlist.append(self.button_three)
+        # self.buttonlist.append(self.button_four)
+        # self.buttonlist.append(self.button_five)
+        # self.buttonlist.append(self.button_six)
+        # self.buttonlist.append(self.button_seven)
+        # self.buttonlist.append(self.button_eight)
+        # self.buttonlist.append(self.button_nine)
 
     def load_streak(self):
         '''load in previous longest streak from file'''
