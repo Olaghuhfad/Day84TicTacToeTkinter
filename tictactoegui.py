@@ -23,7 +23,6 @@ class TicTacToeGUI:
         self.load_images()
         self.load_gif()
         self.make_buttons()
-        # self.make_button_list()
         self.make_end_buttons()
 
     def on_click(self, button_pressed):
@@ -190,19 +189,6 @@ class TicTacToeGUI:
         self.top_display_lose_img = PhotoImage(file="./images/TopDisplayLosePNG.png")
         self.top_display_tie_img = PhotoImage(file="./images/TopDisplayTiePNG.png")
 
-    def make_button_list(self):
-        '''puts all the buttons into a list'''
-        pass
-        # self.buttonlist = []
-        # self.buttonlist.append(self.button_one)
-        # self.buttonlist.append(self.button_two)
-        # self.buttonlist.append(self.button_three)
-        # self.buttonlist.append(self.button_four)
-        # self.buttonlist.append(self.button_five)
-        # self.buttonlist.append(self.button_six)
-        # self.buttonlist.append(self.button_seven)
-        # self.buttonlist.append(self.button_eight)
-        # self.buttonlist.append(self.button_nine)
 
     def load_streak(self):
         '''load in previous longest streak from file'''
