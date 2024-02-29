@@ -54,6 +54,7 @@ class TicTacToe:
             return False
 
 
-    def clear_positions(self):
+    def restart(self):
+        self.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         del self.playerPositions[:]
         del self.cpuPositions[:]

@@ -15,7 +15,7 @@ class TicTacToeGUI:
 
         self.player_score = 0
         self.cpu_score = 0
-        self.buttonlist = []
+        self.button_list = []
         self.old_streak = self.load_streak()
         self.current_streak = 0
         self.previous_result = "win"
@@ -34,14 +34,13 @@ class TicTacToeGUI:
         if check:
             self.ttt_engine.playPiece(pos=button_pressed, user="player")
             self.wiggle_button(button_pressed, 0, user="player")
-            # self.window.after(500)
-            # self.buttonlist[button_pressed - 1].config(image=self.button_X)
             # disabling a button made it change colour, so remove command instead
-            self.buttonlist[button_pressed - 1].config(command=0)
+            self.button_list[button_pressed - 1].config(command=0)
 
         # need to check if the move made the player win, so then cpu does not make a move
         if self.ttt_engine.check_win() == "player":
             # self.end_game("player")
+            # after gif was added the game was ending too fast, so added a delay
             self.window.after(800, self.end_game, "player")
             return
 
@@ -49,6 +48,7 @@ class TicTacToeGUI:
         curmoves = self.ttt_engine.get_number_of_moves()
         if curmoves == 9:
             # self.end_game_tie()
+            # after gif was added the game was ending too fast, so added a delay
             self.window.after(800, self.end_game_tie)
             return
 
@@ -62,7 +62,7 @@ class TicTacToeGUI:
         self.ttt_engine.playPiece(pos=new_cpu_move, user="cpu")
         self.wiggle_button(new_cpu_move, 0, user="cpu")
 
-        self.buttonlist[new_cpu_move - 1].config(command=0)
+        self.button_list[new_cpu_move - 1].config(command=0)
 
         # check if cpu has won from the new move, so game can end
         if self.ttt_engine.check_win() == "cpu":
@@ -102,10 +102,11 @@ class TicTacToeGUI:
         '''how to restart the game'''
         self.clear_end_buttons()
         self.refresh_buttons()
-        self.ttt_engine.clear_positions()
+        self.ttt_engine.restart()
 
 
     def streak_check(self, result):
+        '''called after a game is over, adds to streak if player wins, breaks if player loses'''
         if result == "win":
             self.current_streak += 1
         elif result == "lose" or result == "tie":
@@ -129,21 +130,22 @@ class TicTacToeGUI:
         self.tie_button.grid_forget()
 
     def disable_buttons(self):
-        '''buttons are still clickable when game is over'''
+        '''make it so player can no longer make moves'''
         # the buttons are still clickable but don't do anything
-        for button in self.buttonlist:
+        for button in self.button_list:
             button.config(command=0)
+
     def make_buttons(self):
         '''creates all the buttons and the top display'''
+        # num keeps track of which number is passed from the button being pressed
         num = 0
-
+        # double loop like this to create grid locations
         for row in range(1, 4):
             for col in range(3):
                 num += 1
                 temp_button = Button(image=self.black_button, borderwidth=0, command=partial(self.on_click, num))
                 temp_button.grid(column=col, row=row)
-                self.buttonlist.append(temp_button)
-
+                self.button_list.append(temp_button)
 
         self.display = Canvas(width=600, height=200, highlightthickness=0)
         self.display_img = self.display.create_image((300,100), image=self.top_display_img)
@@ -159,10 +161,9 @@ class TicTacToeGUI:
         for row in range(1, 4):
             for col in range(3):
                 num += 1
-                self.buttonlist[num-1].configure(image=self.black_button)
-                self.buttonlist[num-1].configure(command=partial(self.on_click, num))
-                self.buttonlist[num-1].grid(column=col, row=row)
-
+                self.button_list[num - 1].configure(image=self.black_button)
+                self.button_list[num - 1].configure(command=partial(self.on_click, num))
+                self.button_list[num - 1].grid(column=col, row=row)
 
         self.display.itemconfig(self.display_img, image=self.top_display_img)
         self.display.itemconfig(self.display_player_score, text=f"Player: {self.player_score}")
@@ -197,6 +198,7 @@ class TicTacToeGUI:
         return streak
 
     def save_streak(self):
+        '''called when window closed, saves the new top streak if player beats old streak'''
         saved_streak = self.load_streak()
         if self.old_streak > saved_streak:
 
@@ -204,19 +206,22 @@ class TicTacToeGUI:
                 file.write(str(self.current_streak))
 
     def load_gif(self):
+        '''loads the gif'''
+        # the gif needs to be loaded into a list of images
         self.frame_count = 13
         self.frames = [PhotoImage(file="./images/gif/shrunkwigglegif.gif", format="gif -index %i" %(i)) for i in range(self.frame_count)]
 
     def wiggle_button(self, button_pressed, ind, user):
-        # self.buttonlist[button_pressed - 1].config(image=self.button_X)
-        # print(f"incoming user {user}")
+        '''a function for running the gif'''
+        # was having issues with the wrong image being displayed at the end of the gif
+        # so split it like this
         if user == "player":
-            self.wiggle_x(self.buttonlist[button_pressed - 1], 0)
+            self.wiggle_x(self.button_list[button_pressed - 1], 0)
         else:
-            # self.wiggle_o(self.buttonlist[button_pressed - 1], 0)
-            self.window.after(500, self.wiggle_o, self.buttonlist[button_pressed - 1], 0)
+            self.window.after(500, self.wiggle_o, self.button_list[button_pressed - 1], 0)
 
     def wiggle_x(self, widget, ind):
+        '''displays the gif then changes the button to player X'''
         frame = self.frames[ind]
         ind += 1
         widget.configure(image=frame)
@@ -226,6 +231,7 @@ class TicTacToeGUI:
         self.window.after(30, self.wiggle_x, widget, ind)
 
     def wiggle_o(self, widget, ind):
+        '''displays the gif then changes the button to cpu O'''
         frame = self.frames[ind]
         ind += 1
         widget.configure(image=frame)
